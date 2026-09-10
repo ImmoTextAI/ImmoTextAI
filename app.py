@@ -331,11 +331,10 @@ def main():
                     if not user_record or not user_record["password"]:
                         st.error(f"❌ Unter der E-Mail {clean_email} existiert kein Account. Bitte registriere dich zuerst.")
                     else:
-                        if user_record["password"] == hash_password(login_password):
-            # Testphase: Jeder erfolgreiche Login bekommt sofort vollen Zugang ohne Whitelist/Stripe
-            st.session_state.authenticated = True
-            st.session_state.user_email = clean_email
-            st.rerun()
+                       if user_record["password"] == hash_password(login_password):
+                             st.session_state.authenticated = True
+                               st.session_state.user_email = clean_email
+                                 st.rerun()
 
         with tab_register:
             st.subheader("Neues Konto erstellen")
