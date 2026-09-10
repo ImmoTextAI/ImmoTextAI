@@ -171,7 +171,7 @@ def create_pdf(text, makler_name, makler_telefon, makler_email, makler_buero):
         contact_info = "\n".join(contact_lines)
         clean_contact = contact_info.encode("latin-1", "replace").decode("latin-1")
         pdf.multi_cell(0, 6, clean_contact)
-    return pdf.output(dest='S').encode('latin-1')
+    return bytes(pdf.output(dest='S'))
 
 def encode_image_to_base64(uploaded_file):
     image = Image.open(uploaded_file)
