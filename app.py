@@ -332,22 +332,10 @@ def main():
                         st.error(f"❌ Unter der E-Mail {clean_email} existiert kein Account. Bitte registriere dich zuerst.")
                     else:
                         if user_record["password"] == hash_password(login_password):
-                            if clean_email in whitelist:
-                                st.session_state.authenticated = True
-                                st.session_state.user_email = clean_email
-                                st.rerun()
-                            else:
-                                st.markdown("---")
-                                st.warning("🔒 Aktiver Pro-Zugang erforderlich. Bitte schalte deinen Account frei.")
-                                st.markdown(f"""
-                                    <a href="{STRIPE_PAYMENT_URL}" target="_self">
-                                        <button style="width:100%; background-color:#635BFF; color:white; padding:14px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
-                                            Jetzt für 29 € / Monat freischalten (Stripe Checkout)
-                                        </button>
-                                    </a>
-                                """, unsafe_allow_html=True)
-                        else:
-                            st.error("❌ Falsches Passwort! Bitte versuchen Sie es erneut.")
+            # Testphase: Jeder erfolgreiche Login bekommt sofort vollen Zugang ohne Whitelist/Stripe
+            st.session_state.authenticated = True
+            st.session_state.user_email = clean_email
+            st.rerun()
 
         with tab_register:
             st.subheader("Neues Konto erstellen")
