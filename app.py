@@ -804,23 +804,22 @@ try:
         )
 
         expose_ergebnis = completion.choices[0].message.content
-   
-                            
-                            st.markdown("---")
-                            st.subheader("📄 Generiertes Exposé & Bildanalyse:")
-                            st.markdown(expose_ergebnis)
 
-                            save_expose_to_db(st.session_state.user_email, "Exposé via KI-Bildanalyse", expose_ergebnis)
-                            
-                            pdf_bytes = create_pdf(expose_ergebnis, current_name, current_telefon, st.session_state.user_email, current_buero)
-                            st.download_button(
-                                label="📥 Als PDF herunterladen",
-                                data=pdf_bytes,
-                                file_name="expose_aus_bildern.pdf",
-                                mime="application/pdf"
-                            )
-                        except Exception as e:
-                            st.error(f"Fehler bei der API-Anfrage: {e}")
+        st.markdown("---")
+        st.subheader("📄 Generiertes Exposé & Bildanalyse:")
+        st.markdown(expose_ergebnis)
+
+        save_expose_to_db(st.session_state.user_email, "Exposé via KI-Bildanalyse", expose_ergebnis)
+
+        pdf_bytes = create_pdf(expose_ergebnis, current_name, current_telefon, st.session_state.user_email, current_buero)
+        st.download_button(
+            label="📥 Als PDF herunterladen",
+            data=pdf_bytes,
+            file_name="expose_aus_bildern.pdf",
+            mime="application/pdf"
+        )
+    except Exception as e:
+        st.error(f"Fehler bei der API-Anfrage: {e}")
 
 if __name__ == "__main__":
     main()
