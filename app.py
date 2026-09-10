@@ -185,19 +185,19 @@ def encode_image_to_base64(uploaded_file):
 def get_epoch_prompt_instructions(stimmung, lang="Deutsch"):
     if lang == "English":
         instructions = {
-            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "Tone: Modern, dynamic, fresh, and trendy. Ideal for young professionals, singles, or first-time buyers looking for an urban lifestyle, open spaces, and connectivity.",
-            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "Tone: Warm, emotional, safe, and family-oriented. Focus on a harmonious home, child safety, garden spaces, and a welcoming community.",
-            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "Tone: Elegant, prestigious, exclusive, and sophisticated. Focus on top architecture, premium finishes, status, and long-term value.",
-            "☕ Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "Tone: Peaceful, natural, accessible, and relaxed. Focus on tranquility, relaxation, comfort, nature, and stress-free living."
+            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Modern, dynamic, fresh, and trendy. Ideal for young professionals, singles, and first-time buyers looking for an urban lifestyle, openness, and smart aesthetics.",
+            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Warm, emotional, safe, and family-oriented. Focus on a harmonious home, child safety, garden spaces, and a welcoming community.",
+            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Elegant, prestigious, exclusive, and sophisticated. Focus on top architecture, premium finishes, status, and long-term value.",
+            "🧓 Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Peaceful, natural, accessible, and relaxed. Focus on tranquility, relaxation, comfort, nature, and stress-free living."
         }
     else:
         instructions = {
-            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "Schreibstil: Modern, dynamisch, frisch und am Puls der Zeit. Zielgruppe sind junge Berufstätige, Singles oder Erstkäufer, die einen urbanen Lifestyle, Offenheit und smarte Ästhetik suchen.",
-            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "Schreibstil: Herzlich, emotional, sicher und familiär. Der Fokus liegt auf einem behaglichen Zuhause, Garten, Sicherheit für Kinder, Spielmöglichkeiten und einem harmonischen Miteinander.",
-            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "Schreibstil: Elegant, gehoben, prestigeträchtig und souverän. Der Fokus liegt auf architektonischer Qualität, exklusiven Materialien, Werterhalt und repräsentativem Wohnen.",
-            "☕ Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "Schreibstil: Ruhig, einladend, entspannend und naturverbunden. Der Fokus liegt auf Erholung, Komfort, Barrierearmut, friedlicher Umgebung und genussvoller Entschleunigung."
+            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Modern, dynamisch, frisch und am Puls der Zeit. Zielgruppe sind junge Berufstätige, Singles oder Erstkäufer, die einen urbanen Lifestyle, Offenheit und smarte Ästhetik suchen.",
+            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Herzlich, emotional, sicher und familiär. Der Fokus liegt auf einem behaglichen Zuhause, Garten, Sicherheit für Kinder, Spielmöglichkeiten und einer harmonischen Nachbarschaft.",
+            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Elegant, gehoben, prestigeträchtig und souverän. Der Fokus liegt auf architektonischer Qualität, exklusiven Materialien, Status und langfristigem Werterhalt.",
+            "🧓 Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Ruhig, einladend, entspannt und naturnah. Der Fokus liegt auf Erholung, Komfort, Barrierefreiheit, friedlicher Umgebung und barrierearmem Wohnen."
         }
-    return instructions.get(stimmung, instructions["🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)"])
+    return instructions.get(stimmung, instructions.get(list(instructions.keys())[0]))
 
 def main():
     init_db()
