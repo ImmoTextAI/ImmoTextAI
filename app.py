@@ -786,7 +786,7 @@ def main():
                             completion = client.chat.completions.create(
                                 messages=[{"role": "user", "content": content_payload}],
                                 model="qwen/qwen3.6-27b",
-                                max_completion_tokens=1000,
+                                max_completion_tokens=400,
                                 temperature=0.7
                             )
                             
