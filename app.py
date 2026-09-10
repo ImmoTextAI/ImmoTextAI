@@ -783,7 +783,7 @@ def main():
                                     }
                                 })
                                 
-        client = Groq(api_key=groq_key)
+client = Groq(api_key=groq_key)
         epoch_instruction = get_epoch_prompt_instructions(stimmung_auswahl_photo, photo_lang)
     
         system_prompt = (
