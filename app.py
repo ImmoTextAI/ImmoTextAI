@@ -171,7 +171,7 @@ def create_pdf(text, makler_name, makler_telefon, makler_email, makler_buero):
         contact_info = "\n".join(contact_lines)
         clean_contact = contact_info.encode("latin-1", "replace").decode("latin-1")
         pdf.multi_cell(0, 6, clean_contact)
-    return bytes(pdf.output(dest='S'))
+    return pdf.output(dest='S').encode('latin-1')
 
 def encode_image_to_base64(uploaded_file):
     image = Image.open(uploaded_file)
@@ -185,19 +185,19 @@ def encode_image_to_base64(uploaded_file):
 def get_epoch_prompt_instructions(stimmung, lang="Deutsch"):
     if lang == "English":
         instructions = {
-            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Modern, dynamic, fresh, and trendy. Ideal for young professionals, singles, and first-time buyers looking for an urban lifestyle, openness, and smart aesthetics.",
-            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Warm, emotional, safe, and family-oriented. Focus on a harmonious home, child safety, garden spaces, and a welcoming community.",
-            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Elegant, prestigious, exclusive, and sophisticated. Focus on top architecture, premium finishes, status, and long-term value.",
-            "🧓 Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "CRITICAL: Output ONLY the final property exposé. No thinking process, no <think> tags. Tone: Peaceful, natural, accessible, and relaxed. Focus on tranquility, relaxation, comfort, nature, and stress-free living."
+            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "Tone: Modern, dynamic, fresh, and trendy. Ideal for young professionals, singles, or first-time buyers looking for an urban lifestyle, open spaces, and connectivity.",
+            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "Tone: Warm, emotional, safe, and family-oriented. Focus on a harmonious home, child safety, garden spaces, and a welcoming community.",
+            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "Tone: Elegant, prestigious, exclusive, and sophisticated. Focus on top architecture, premium finishes, status, and long-term value.",
+            "☕ Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "Tone: Peaceful, natural, accessible, and relaxed. Focus on tranquility, relaxation, comfort, nature, and stress-free living."
         }
     else:
         instructions = {
-            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Modern, dynamisch, frisch und am Puls der Zeit. Zielgruppe sind junge Berufstätige, Singles oder Erstkäufer, die einen urbanen Lifestyle, Offenheit und smarte Ästhetik suchen.",
-            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Herzlich, emotional, sicher und familiär. Der Fokus liegt auf einem behaglichen Zuhause, Garten, Sicherheit für Kinder, Spielmöglichkeiten und einer harmonischen Nachbarschaft.",
-            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Elegant, gehoben, prestigeträchtig und souverän. Der Fokus liegt auf architektonischer Qualität, exklusiven Materialien, Status und langfristigem Werterhalt.",
-            "🧓 Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "WICHTIG: Gib AUSSCHLIESSLICH das fertige Exposé aus. Keine Denkprozesse, keine <think>-Tags. Schreibstil: Ruhig, einladend, entspannt und naturnah. Der Fokus liegt auf Erholung, Komfort, Barrierefreiheit, friedlicher Umgebung und barrierearmem Wohnen."
+            "🚀 Junge Erwachsene / Urban Start-up (Modern, dynamisch, frisch)": "Schreibstil: Modern, dynamisch, frisch und am Puls der Zeit. Zielgruppe sind junge Berufstätige, Singles oder Erstkäufer, die einen urbanen Lifestyle, Offenheit und smarte Ästhetik suchen.",
+            "🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)": "Schreibstil: Herzlich, emotional, sicher und familiär. Der Fokus liegt auf einem behaglichen Zuhause, Garten, Sicherheit für Kinder, Spielmöglichkeiten und einem harmonischen Miteinander.",
+            "🏛️ Etablierte Lebensmitte / Karriere (Elegant, prestigeträchtig, exklusiv)": "Schreibstil: Elegant, gehoben, prestigeträchtig und souverän. Der Fokus liegt auf architektonischer Qualität, exklusiven Materialien, Werterhalt und repräsentativem Wohnen.",
+            "☕ Ruhestand / Senioren (Ruhig, naturnah, barrierearm, entspannt)": "Schreibstil: Ruhig, einladend, entspannend und naturverbunden. Der Fokus liegt auf Erholung, Komfort, Barrierearmut, friedlicher Umgebung und genussvoller Entschleunigung."
         }
-    return instructions.get(stimmung, instructions.get(list(instructions.keys())[0]))
+    return instructions.get(stimmung, instructions["🏡 Familienphase / Nestbauer (Warm, sicher, kinderfreundlich)"])
 
 def main():
     init_db()
@@ -331,8 +331,24 @@ def main():
                     if not user_record or not user_record["password"]:
                         st.error(f"❌ Unter der E-Mail {clean_email} existiert kein Account. Bitte registriere dich zuerst.")
                     else:
-                       if user_record["password"] == hash_password(login_password): st.session_state.authenticated = True; st.session_state.user_email = clean_email; st.rerun()
-                           
+                        if user_record["password"] == hash_password(login_password):
+                            if clean_email in whitelist:
+                                st.session_state.authenticated = True
+                                st.session_state.user_email = clean_email
+                                st.rerun()
+                            else:
+                                st.markdown("---")
+                                st.warning("🔒 Aktiver Pro-Zugang erforderlich. Bitte schalte deinen Account frei.")
+                                st.markdown(f"""
+                                    <a href="{STRIPE_PAYMENT_URL}" target="_self">
+                                        <button style="width:100%; background-color:#635BFF; color:white; padding:14px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
+                                            Jetzt für 29 € / Monat freischalten (Stripe Checkout)
+                                        </button>
+                                    </a>
+                                """, unsafe_allow_html=True)
+                        else:
+                            st.error("❌ Falsches Passwort! Bitte versuchen Sie es erneut.")
+
         with tab_register:
             st.subheader("Neues Konto erstellen")
             st.write("Erstelle deinen Account, um fehlerfreie Exposés zu generieren.")
@@ -781,26 +797,32 @@ def main():
                                     "image_url": {
                                         "url": f"data:image/jpeg;base64,{base64_data}"
                                     }
-                                })   
-                               		client = Groq(api_key=groq_key)
-   	 	epoch_instruction = get_epoch_prompt_instructions(stimmung_auswahl_photo, photo_lang)
-   	 	system_prompt = (
-       		 f"You are a professional real estate agent. "
-        		f"CRITICAL: Output ONLY the final property exposé. "
-       			 f"No thinking process, no <think> tags, no meta-commentary whatsoever."
-    	)
-    	completion = client.chat.completions.create(
-        	messages=[
-            			{"role": "system", "content": system_prompt},
-            			{"role": "user", "content": content_payload}
-       			 ],
-       			 model="qwen/qwen2.5-32b",
-        		max_completion_tokens=400,
-        		temperature=0.7
-    	)
-    	expose_ergebnis = completion.choices[0].message.content
-    	st.markdown("---")
-    	st.subheader("📄 Generiertes Exposé & Bildanalyse:")
-    	st.markdown(expose_ergebnis)
-    	save_expose_to_db(st.session_state.user_email, "Exposé via KI-Bildanalyse", expose_ergebnis)
-    	pdf_bytes = create_pdf(expose_ergebnis, current_name, current_telefon, st.session_state.user_email, current_buero)
+                                })
+                            
+                            completion = client.chat.completions.create(
+                                messages=[{"role": "user", "content": content_payload}],
+                                model="qwen/qwen3.6-27b",
+                                max_completion_tokens=1000,
+                                temperature=0.7
+                            )
+                            
+                            expose_ergebnis = completion.choices[0].message.content
+                            
+                            st.markdown("---")
+                            st.subheader("📄 Generiertes Exposé & Bildanalyse:")
+                            st.markdown(expose_ergebnis)
+
+                            save_expose_to_db(st.session_state.user_email, "Exposé via KI-Bildanalyse", expose_ergebnis)
+                            
+                            pdf_bytes = create_pdf(expose_ergebnis, current_name, current_telefon, st.session_state.user_email, current_buero)
+                            st.download_button(
+                                label="📥 Als PDF herunterladen",
+                                data=pdf_bytes,
+                                file_name="expose_aus_bildern.pdf",
+                                mime="application/pdf"
+                            )
+                        except Exception as e:
+                            st.error(f"Fehler bei der API-Anfrage: {e}")
+
+if __name__ == "__main__":
+    main()
