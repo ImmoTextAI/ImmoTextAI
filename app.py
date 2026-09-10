@@ -783,12 +783,21 @@ def main():
                                     }
                                 })
                             
-                            completion = client.chat.completions.create(
-                                messages=[{"role": "user", "content": content_payload}],
-                                model="qwen/qwen3.6-27b",
-                                max_completion_tokens=400,
-                                temperature=0.7
-                            )
+                           system_prompt = (
+    f"You are a professional real estate agent. "
+    f"CRITICAL: Output ONLY the final property exposé. "
+    f"No thinking process, no <think> tags, no meta-commentary whatsoever."
+)
+
+completion = client.chat.completions.create(
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": content_payload}
+    ],
+    model="qwen/qwen3.6-27b",
+    max_completion_tokens=400,
+    temperature=0.7
+)
                             
                             expose_ergebnis = completion.choices[0].message.content
                             
