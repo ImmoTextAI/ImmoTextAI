@@ -783,7 +783,7 @@ def main():
                                     }
                                 })
                                 
-         client = Groq(api_key=groq_key)
+           client = Groq(api_key=groq_key)
         epoch_instruction = get_epoch_prompt_instructions(stimmung_auswahl_photo, photo_lang)
     
         system_prompt = (
@@ -816,7 +816,7 @@ def main():
             data=pdf_bytes,
             file_name="expose_aus_bildern.pdf",
             mime="application/pdf"
-)
-    
+    )
+
 if __name__ == "__main__":
-main()
+    main()
