@@ -332,20 +332,10 @@ def main():
                         st.error(f"❌ Unter der E-Mail {clean_email} existiert kein Account. Bitte registriere dich zuerst.")
                     else:
                         if user_record["password"] == hash_password(login_password):
-                            if clean_email in whitelist:
-                                st.session_state.authenticated = True
-                                st.session_state.user_email = clean_email
-                                st.rerun()
-                            else:
-                                st.markdown("---")
-                                st.warning("🔒 Aktiver Pro-Zugang erforderlich. Bitte schalte deinen Account frei.")
-                                st.markdown(f"""
-                                    <a href="{STRIPE_PAYMENT_URL}" target="_self">
-                                        <button style="width:100%; background-color:#635BFF; color:white; padding:14px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
-                                            Jetzt für 29 € / Monat freischalten (Stripe Checkout)
-                                        </button>
-                                    </a>
-                                """, unsafe_allow_html=True)
+                            st.session_state.authenticated = True
+                            st.session_state.user_email = clean_email
+                            st.rerun()
+                            
                         else:
                             st.error("❌ Falsches Passwort! Bitte versuchen Sie es erneut.")
 
@@ -569,34 +559,44 @@ def main():
                             """
                         else:
                             prompt = f"""
-                            Du bist ein erfahrener, hochkreativer und seriöser deutscher Immobilienmakler. 
-                            {epoch_instruction}
-                            Erstelle ein professionelles, ansprechendes und strukturiertes Immobilien-Exposé auf Basis der folgenden Daten. 
-                            Verwende Abschnitte wie: 'Objektbeschreibung', 'Ausstattung', 'Lage' und 'Sonstiges'. Vermeide Wortwiederholungen oder Endlosschleifen.
+                            Antworte AUSSCHLIESSLICH mit dem finalen Exposé. Verwende KEINE Denk-Blöcke, KEINE Analysen, KEINE Formatierungspläne. Beginne sofort mit dem Titel.
 
                             - Objekttyp: {immobilien_typ}
                             - Titel: {objekt_titel}
                             - Ort / Lage: {ort}
                             - Preis: {preis}
-                            - Fläche: {flaeche}
+                            - Fläche: {flaechen}
                             - Zimmer: {zimmer}
                             - Baujahr: {baujahr}
                             - Energieeffizienzklasse: {energienutzung}
                             - Ausstattung & Highlights: {combined_highlights}
                             - Besonderheiten: {sonstiges}
                             """
-
                         completion = client.chat.completions.create(
-                            messages=[{"role": "user", "content": prompt}],
+                            messages=[
+                                {"role": "system", "content": "Du bist ein erfahrener deutscher Immobilienmakler. Schreibe ein professionelles, ausführliches Fließtext-Exposé auf Deutsch mit Abschnitten wie Objektbeschreibung, Ausstattung und Lage. Gib niemals Gedanken, Analysen oder JSON-Auflistungen aus."},
+                                {"role": "user", "content": prompt}
+                            ],
                             model="qwen/qwen3.6-27b",
                             max_completion_tokens=1000,
                             temperature=0.7
                         )
 
                         expose_ergebnis = completion.choices[0].message.content
+                        import re
+                        expose_ergebnis = re.sub(r'<think>.*?</think>', '', expose_ergebnis, flags=re.DOTALL | re.IGNORECASE)
+                        if "</think>" in expose_ergebnis:
+                            expose_ergebnis = expose_ergebnis.split("</think>")[-1]
+                        if "Titel:" in expose_ergebnis:
+                            expose_ergebnis = "Titel:" + expose_ergebnis.split("Titel:")[-1]
+                        elif "Objektbeschreibung:" in expose_ergebnis:
+                            expose_ergebnis = "Objektbeschreibung:" + expose_ergebnis.split("Objektbeschreibung:")[-1]
+                        expose_ergebnis = expose_ergebnis.strip()
+
                         st.markdown("---")
                         st.subheader("📄 Generiertes Exposé:")
                         st.markdown(expose_ergebnis)
+                       
 
                         save_expose_to_db(st.session_state.user_email, objekt_titel if objekt_titel else "Immobilien-Exposé", expose_ergebnis)
                         
@@ -768,18 +768,14 @@ def main():
                                 instruction_text = (
                                     "You are a professional real estate agent. "
                                     f"{epoch_instruction} "
-                                    "First, analyze the uploaded images and write a detailed room description. "
-                                    "Second, based on these images and the additional notes, create a complete, professional, and structured real estate exposé "
-                                    "(including Property Description, Features, Location, and Miscellaneous). Avoid repetition. "
+                                    "Answer EXCLUSIVELY with the final real estate exposé. Use NO thought blocks, NO analyses, NO formatting plans. Start immediately with the title. "
                                     f"Additional agent notes: {bild_hinweis}"
                                 )
                             else:
                                 instruction_text = (
                                     "Du bist ein professioneller Immobilienmakler. "
                                     f"{epoch_instruction} "
-                                    "Analysiere zuerst die hochgeladenen Bilder und verfasse eine detaillierte Raumbeschreibung. "
-                                    "Erstelle im Anschluss basierend auf den Bildern und den zusätzlichen Hinweisen ein vollständiges, professionelles und strukturiertes "
-                                    "Immobilien-Exposé (mit Abschnitten wie Objektbeschreibung, Ausstattung, Lage, Sonstiges). Vermeide Wortwiederholungen. "
+                                    "Antworte AUSSCHLIESSLICH mit dem finalen Exposé. Verwende KEINE Denk-Blöcke, KEINE Analysen, KEINE Formatierungspläne. Beginne sofort mit dem Titel. "
                                     f"Zusätzliche Hinweise vom Makler: {bild_hinweis}"
                                 )
 
@@ -807,7 +803,17 @@ def main():
                             )
                             
                             expose_ergebnis = completion.choices[0].message.content
-                            
+                            import re
+                            expose_ergebnis = re.sub(r'<think>.*?</think>', '', expose_ergebnis, flags=re.DOTALL | re.IGNORECASE)
+                            if "</think>" in expose_ergebnis:
+                                expose_ergebnis = expose_ergebnis.split("</think>")[-1]
+                            if "Titel:" in expose_ergebnis:
+                                if "Titel:" in expose_ergebnis:
+                                    expose_ergebnis = "Titel:" + expose_ergebnis.split("Titel:")[-1]
+                                elif "Objektbeschreibung:" in expose_ergebnis:
+                                    expose_ergebnis = "Objektbeschreibung:" + expose_ergebnis.split("Objektbeschreibung:")[-1]
+                            expose_ergebnis = expose_ergebnis.strip()
+
                             st.markdown("---")
                             st.subheader("📄 Generiertes Exposé & Bildanalyse:")
                             st.markdown(expose_ergebnis)
