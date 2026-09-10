@@ -783,43 +783,40 @@ def main():
                                     }
                                 })
                             
-try:
-        client = Groq(api_key=groq_key)
-        epoch_instruction = get_epoch_prompt_instructions(stimmung_auswahl_photo, photo_lang)
+     client = Groq(api_key=groq_key)
+    epoch_instruction = get_epoch_prompt_instructions(stimmung_auswahl_photo, photo_lang)
 
-        system_prompt = (
-            f"You are a professional real estate agent. "
-            f"CRITICAL: Output ONLY the final property exposé. "
-            f"No thinking process, no <think> tags, no meta-commentary whatsoever."
-        )
+    system_prompt = (
+        f"You are a professional real estate agent. "
+        f"CRITICAL: Output ONLY the final property exposé. "
+        f"No thinking process, no <think> tags, no meta-commentary whatsoever."
+    )
 
-        completion = client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": content_payload}
-            ],
-            model="qwen/qwen3.6-27b",
-            max_completion_tokens=400,
-            temperature=0.7
-        )
+    completion = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": content_payload}
+        ],
+        model="qwen/qwen3.6-27b",
+        max_completion_tokens=400,
+        temperature=0.7
+    )
 
-        expose_ergebnis = completion.choices[0].message.content
+    expose_ergebnis = completion.choices[0].message.content
 
-        st.markdown("---")
-        st.subheader("📄 Generiertes Exposé & Bildanalyse:")
-        st.markdown(expose_ergebnis)
+    st.markdown("---")
+    st.subheader("📄 Generiertes Exposé & Bildanalyse:")
+    st.markdown(expose_ergebnis)
 
-        save_expose_to_db(st.session_state.user_email, "Exposé via KI-Bildanalyse", expose_ergebnis)
+    save_expose_to_db(st.session_state.user_email, "Exposé via KI-Bildanalyse", expose_ergebnis)
 
-        pdf_bytes = create_pdf(expose_ergebnis, current_name, current_telefon, st.session_state.user_email, current_buero)
-        st.download_button(
-            label="📥 Als PDF herunterladen",
-            data=pdf_bytes,
-            file_name="expose_aus_bildern.pdf",
-            mime="application/pdf"
-        )
-    except Exception as e:
-        st.error(f"Fehler bei der API-Anfrage: {e}")
+    pdf_bytes = create_pdf(expose_ergebnis, current_name, current_telefon, st.session_state.user_email, current_buero)
+    st.download_button(
+        label="📥 Als PDF herunterladen",
+        data=pdf_bytes,
+        file_name="expose_aus_bildern.pdf",
+        mime="application/pdf"
+    )
 
 if __name__ == "__main__":
     main()
