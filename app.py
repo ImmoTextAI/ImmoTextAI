@@ -565,7 +565,7 @@ def main():
                             - Titel: {objekt_titel}
                             - Ort / Lage: {ort}
                             - Preis: {preis}
-                            - Fläche: {flaechen}
+                            - Fläche: {flaeche}
                             - Zimmer: {zimmer}
                             - Baujahr: {baujahr}
                             - Energieeffizienzklasse: {energienutzung}
